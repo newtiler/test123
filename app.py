@@ -29,18 +29,18 @@ def main():
         return anime_df[['Name', 'Synopsis']].iloc[anime_indices]
 
     def Table(df):
-    fig=go.Figure(go.Table(columnorder = [1,2,3],
-          columnwidth = [100,100],
-            header=dict(values=['Name','Synopsis'],
-                        line_color='black',font=dict(color='white',size= 19),height=40,
-                        fill_color='red',
-                        align=['center','center']),
+        fig=go.Figure(go.Table(columnorder = [1,2,3],
+            columnwidth = [100,100],
+                header=dict(values=['Name','Synopsis'],
+                    line_color='black',font=dict(color='white',size= 19),height=40,
+                    fill_color='red',
+                    align=['center','center']),
                 cells=dict(values=[df.Name,df.Synopsis],
-                       fill_color='#ffdac4',line_color='grey',
-                           font=dict(color='black', family="Lato", size=16),
-                       align='left')))
-    fig.update_layout(height=500, title ={'text': "Top 10 Anime Recommendations", 'font': {'size': 22}})
-    return st.plotly_chart(fig,use_container_width=True)
+                    fill_color='#ffdac4',line_color='grey',
+                    font=dict(color='black', family="Lato", size=16),
+                    align='left')))
+        fig.update_layout(height=500, title ={'text': "Top 10 Anime Recommendations", 'font': {'size': 22}})
+        return st.plotly_chart(fig,use_container_width=True)
     anime_list = anime_df['Name'].values
 
     selected_anime = st.selectbox("Type or select an anime from the dropdown",anime_list)
