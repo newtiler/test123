@@ -12,7 +12,7 @@ anime_df = anime_df.rename({'sypnopsis': 'Synopsis'}, axis=1)
 anime_df = anime_df.rename({'MAL_id': 'anime_id'}, axis=1)
 
 #rating_df = rating_df[(rating_df["rating"] != -1)]
-anime_df = anime_df[(anime_df["anime_id"] < 1500)]
+anime_df = anime_df[(anime_df['anime_id'] < 1500)]
 
 anime_copy = anime_df.copy()
 anime_copy = anime_copy[['Name', 'Genres', 'Synopsis']]
