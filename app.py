@@ -5,14 +5,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-anime_df = pd.read_csv('anime_with_synopsis.csv')
-#rating_df = pd.read_csv('rating.csv')
-
-anime_df = anime_df.rename({'sypnopsis': 'Synopsis'}, axis=1)
-anime_df = anime_df.rename({'MAL_id': 'anime_id'}, axis=1)
-
-#rating_df = rating_df[(rating_df["rating"] != -1)]
-anime_df = anime_df[(anime_df['anime_id'] < 1500)]
+anime_df = pd.read_csv('anime1.csv')
+rating_df = pd.read_csv('rating1.csv')
 
 anime_copy = anime_df.copy()
 anime_copy = anime_copy[['Name', 'Genres', 'Synopsis']]
