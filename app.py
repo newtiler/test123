@@ -40,17 +40,59 @@ def Table(df):
     return st.plotly_chart(fig,use_container_width=True)
 anime_list = anime_df['Name'].values
 
-st.title(':red[Anime] Recommendation System')
-selected_anime = st.selectbox(
-    "Type or select an anime from the dropdown",
-    anime_list
-)
+new_rating_df = rating_df.copy()
 
+cmat = pd.crosstab(new_rating_df['user_id'],new_rating_df['anime_id'],new_rating_df['rating'],aggfunc=sum)
+cmat = cmat.fillna(0)
+
+from sklearn.decomposition import NMF
+nmf = NMF(200)
+nmf.fit(cmat)
+
+H = pd.DataFrame(np.round(nmf.components_, 2), columns=cmat.columns)
+W = pd.DataFrame(np.round(nmf.transform(cmat), 2), columns=H.index)
+recommend = pd.DataFrame(np.round(np.dot(W, H), 2), columns=H.columns)
+recommend.index = cmat.index
+
+def recommendation(uid,topn):
+  res = list(recommend.iloc[uid].sort_values(ascending=False)[0:topn].index)
+  res = anime_df[anime_df['anime_id'].isin(res)]
+  mList = rating_df[rating_df['user_id']==uid][['anime_id','rating']]
+  #return mList, res
+  res = res.merge(mList,on='anime_id',how='left')
+  #return res
+  res = res[['Name','rating']]
+  return res
+
+def Table2(df2):
+    fig=go.Figure(go.Table(columnorder = [1,2,3],
+          columnwidth = [100,100],
+            header=dict(values=['Name','rating'],
+                        line_color='black',font=dict(color='white',size= 19),height=40,
+                        fill_color='red',
+                        align=['center','center']),
+                cells=dict(values=[df2.Name,df2.rating],
+                       fill_color='#ffdac4',line_color='grey',
+                           font=dict(color='black', family="Lato", size=16),
+                       align='left')))
+    fig.update_layout(height=500, title ={'text': "Top 10 Anime Recommendations for user", 'font': {'size': 22}})
+    return st.plotly_chart(fig,use_container_width=True)
+
+st.title(':red[Anime] Recommendation System')
+selected_anime = st.selectbox("Type or select an anime from the dropdown",anime_list)
 if st.button('Show Recommendation'):
     recommended_anime_names = get_recommendations(selected_anime)
     #list_of_recommended_anime = recommended_anime_names.to_list()
    # st.write(recommended_anime_names[['title', 'description']])
     Table(recommended_anime_names)
+
+selected_anime_fuser = round(st.number_input("Select user id that you want",min_value=recommend.index[0], max_value=recommend.index[-1]))
+topn = round(st.number_input("Select number of recommendations",min_value=5, max_value=20, step=1))
+if st.button('Show Recommendation for user'):
+    recommended_anime_fuser = recommendation(selected_anime_fuser, topn)
+    #list_of_recommended_anime = recommended_anime_fuser.to_list()
+   # st.write(recommended_anime_fuser[['title', 'description']])
+    Table2(recommended_anime_fuser)
     
 st.write('  '
          )
