@@ -19,7 +19,7 @@ tfidf_matrix = tfidf.fit_transform(anime_copy['tagline'])
 from sklearn.metrics.pairwise import linear_kernel
 cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 
-def get_recommendations(Name, topn, cosine_sim=cosine_sim):
+def func_content_based_recommendation(Name, topn, cosine_sim=cosine_sim):
     idx = anime_copy[anime_copy['Name'] == Name].index[0]
     sim_scores = sorted(list(enumerate(cosine_sim[idx])), reverse=True, key=lambda x: x[1])[1:topn+1]
     anime_indices = [i[0] for i in sim_scores]
@@ -39,7 +39,7 @@ W = pd.DataFrame(np.round(nmf.transform(cmat), 2), columns=H.index)
 recommend = pd.DataFrame(np.round(np.dot(W, H), 2), columns=H.columns)
 recommend.index = cmat.index
 
-def recommendation(uid,topn):
+def func_collaborative_recommendation(uid,topn):
     res = list(recommend.iloc[uid].sort_values(ascending=False)[0:topn].index)
     res = anime_df[anime_df['anime_id'].isin(res)]
     res = res[['Name','Synopsis']]
@@ -69,7 +69,7 @@ def main():
         selected_anime = st.selectbox("Type or select an anime from the dropdown",anime_list)
         topn = round(st.number_input("Select number of recommendations",min_value=5, max_value=20, step=1))
         if st.button('Show Recommendation'):
-            recommended_anime_names = get_recommendations(selected_anime, topn)
+            recommended_anime_names = func_content_based_recommendation(selected_anime, topn)
             #list_of_recommended_anime = recommended_anime_names.to_list()
         # st.write(recommended_anime_names[['title', 'description']])
             Table(recommended_anime_names)
@@ -90,7 +90,7 @@ def main():
         selected_anime_fuser = round(st.number_input("Select user id that you want",min_value=recommend.index[0], max_value=recommend.index[-1]))
         topn = round(st.number_input("Select number of recommendations",min_value=5, max_value=20, step=1))
         if st.button('Show Recommendation for user'):
-            recommended_anime_fuser = recommendation(selected_anime_fuser, topn)
+            recommended_anime_fuser = func_collaborative_recommendation(selected_anime_fuser, topn)
         #list_of_recommended_anime = recommended_anime_fuser.to_list()
         # st.write(recommended_anime_fuser[['title', 'description']])
             Table2(recommended_anime_fuser)
