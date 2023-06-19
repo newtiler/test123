@@ -4,7 +4,6 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.feature_extraction.text import TfidfVectorizer
-#import scipy as sp
 
 anime_df = pd.read_csv('anime1.csv')
 rating_df = pd.read_csv('rating1.csv')
